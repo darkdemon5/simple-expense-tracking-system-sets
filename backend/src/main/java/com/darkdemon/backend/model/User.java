@@ -19,10 +19,15 @@ public class User {
     private String email;
     private String password;
     private BigDecimal budget;
-    private BudgetPeriodEnum budget_period;
-    private Date budget_start_date;
-    private Date budget_end_date;
-    private Date created_at;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "budget_period",columnDefinition = "budget_period_enum")
+    private BudgetPeriodEnum budgetPeriod;
+    @Column(name = "budget_start_date")
+    private Date budgetStartDate;
+    @Column(name = "budget_end_date")
+    private Date budgetEndDate;
+    @Column(name = "created_at")
+    private Date createdAt;
+    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
     private List<Expense> expenseList;
 }
