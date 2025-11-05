@@ -4,12 +4,11 @@ import com.darkdemon.backend.enums.BudgetPeriodEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.PostgreSQLArrayJdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -31,9 +30,9 @@ public class User {
     @Column(name = "budget_period",columnDefinition = "budget_period_enum")
     private BudgetPeriodEnum budgetPeriod;
     @Column(name = "budget_start_date")
-    private Date budgetStartDate;
+    private LocalDate budgetStartDate;
     @Column(name = "budget_end_date")
-    private Date budgetEndDate;
+    private LocalDate budgetEndDate;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
