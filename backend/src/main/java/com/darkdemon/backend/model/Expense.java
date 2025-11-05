@@ -2,13 +2,19 @@ package com.darkdemon.backend.model;
 
 import com.darkdemon.backend.enums.PaymentMethodEnum;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "expenses")
 public class Expense {
     @Id
@@ -22,10 +28,11 @@ public class Expense {
     private String category;
     private BigDecimal amount;
     @Column(name = "created_date")
-    private Date createdDate;
+    private LocalDateTime createdDate;
     @Column(name = "expense_date")
     private Date expenseDate;
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "payment_method", columnDefinition = "payment_method_enum")
     private PaymentMethodEnum paymentMethod;
     @Column(name = "is_deleted")
