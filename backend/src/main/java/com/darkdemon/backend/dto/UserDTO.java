@@ -44,7 +44,7 @@ public class UserDTO {
 
     @AssertTrue(message = "Budget end date must be after start date")
     private boolean isEndDateValid() {
-        if(budgetStartDate == null || budgetEndDate == null){
+        if (budgetStartDate == null || budgetEndDate == null) {
             return true;
         }
         return budgetEndDate.isAfter(budgetStartDate);

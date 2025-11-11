@@ -27,7 +27,7 @@ public class User {
     private BigDecimal budget;
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
-    @Column(name = "budget_period",columnDefinition = "budget_period_enum")
+    @Column(name = "budget_period", columnDefinition = "budget_period_enum")
     private BudgetPeriodEnum budgetPeriod;
     @Column(name = "budget_start_date")
     private LocalDate budgetStartDate;

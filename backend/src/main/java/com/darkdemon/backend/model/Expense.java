@@ -7,6 +7,7 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -19,7 +20,7 @@ import java.util.Date;
 public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user_id;
@@ -30,7 +31,7 @@ public class Expense {
     @Column(name = "created_date")
     private LocalDateTime createdDate;
     @Column(name = "expense_date")
-    private Date expenseDate;
+    private LocalDate expenseDate;
     @Enumerated(EnumType.STRING)
     @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "payment_method", columnDefinition = "payment_method_enum")

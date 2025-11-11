@@ -1,6 +1,7 @@
 package com.darkdemon.backend.controller;
 
 import com.darkdemon.backend.dto.UserDTO;
+import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
 
 @RestController
@@ -20,13 +22,13 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/")
-private String getUser(){
-    return "Fuck You!!!";
-}
+    @GetMapping("/user")
+    private List<User> getUser() {
+        return authService.getUser();
+    }
 
-@PostMapping("/signup")
-    private ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userdto){
+    @PostMapping("/signup")
+    private ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userdto) {
         return authService.signUp(userdto);
     }
 }
