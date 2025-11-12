@@ -2,10 +2,8 @@ package com.darkdemon.backend.controller;
 
 import com.darkdemon.backend.dto.LoginDTO;
 import com.darkdemon.backend.dto.UserDTO;
-import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.service.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
 
 @RestController
