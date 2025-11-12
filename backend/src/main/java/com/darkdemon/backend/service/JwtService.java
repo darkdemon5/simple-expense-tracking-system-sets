@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.util.Base64;
@@ -24,7 +25,8 @@ public class JwtService {
         byte[] decodedKey = Base64.getDecoder().decode(jwtSecret);
         this.secretKey = Keys.hmacShaKeyFor(decodedKey);
     }
-//Token Generation
+
+    //Token Generation
     private String generateToken(Long userId, String type, long expiry) {
 
         return Jwts.builder()
@@ -44,7 +46,7 @@ public class JwtService {
         return generateToken(userId, "refresh", REFRESHER_TOKEN_VALIDITY_MS);
     }
 
-//Token Validation
+    //Token Validation
     public Boolean validateAccessToken(String token) {
         Claims claims = parseAllClaims(token);
         if (claims == null) {
@@ -71,17 +73,17 @@ public class JwtService {
         return "refresh".equals(tokenType);
     }
 
-    public Long getUserIdFromToken(String token){
+    public Long getUserIdFromToken(String token) {
 
         Claims claims = parseAllClaims(token);
-        if(claims == null){
+        if (claims == null) {
             throw new IllegalArgumentException("Invalid Token!!!");
         }
         return Long.parseLong(claims.getSubject());
     }
 
     private Claims parseAllClaims(String token) {
-        String rawToken= token.startsWith("Bearer ") ? token.substring(7) : token;
+        String rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         try {
             return Jwts.parser()
                     .verifyWith(secretKey)

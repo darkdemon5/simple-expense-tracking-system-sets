@@ -14,11 +14,12 @@ public class TokenUtil {
 
 
     private final String HMAC_SECRET;
-    public TokenUtil(@Value("${HMAC_SECRET}") String HMAC_SECRET){
+
+    public TokenUtil(@Value("${HMAC_SECRET}") String HMAC_SECRET) {
         this.HMAC_SECRET = HMAC_SECRET;
     }
 
-    public String hashWithHmacSha256(String token){
+    public String hashWithHmacSha256(String token) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec secretKey = new SecretKeySpec(HMAC_SECRET.getBytes(StandardCharsets.UTF_8), "HmacSHA256");

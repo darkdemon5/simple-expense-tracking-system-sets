@@ -8,11 +8,11 @@ public class HashEncoder {
 
     private final BCryptPasswordEncoder bcrypt = new BCryptPasswordEncoder();
 
-    public String encode(String raw){
+    public String encode(String raw) {
         return bcrypt.encode(raw);
     }
 
-    public Boolean matchP(String raw, String hashedInput){
+    public Boolean matchP(String raw, String hashedInput) {
         return bcrypt.matches(raw, hashedInput);
     }
 }

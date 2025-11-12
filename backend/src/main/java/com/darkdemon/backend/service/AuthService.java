@@ -58,7 +58,12 @@ public class AuthService {
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!"));
+            String accessToken = jwtService.generateAccessToken(user.getId());
+            String refreshToken = jwtService.generateRefreshToken(user.getId());
+            storeRefreshToken(user, refreshToken);
+            TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!","Keys", tokenResponse));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
 
@@ -80,7 +85,6 @@ public class AuthService {
 
         String accessToken = jwtService.generateAccessToken(user.getId());
         String refreshToken = jwtService.generateRefreshToken(user.getId());
-
         storeRefreshToken(user, refreshToken);
         TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
 
@@ -102,16 +106,16 @@ public class AuthService {
     @Transactional
     public ResponseEntity<?> refresh(String refreshToken){
         if(!jwtService.validateRefreshToken(refreshToken)){
-            throw new IllegalArgumentException("Invalid Token");
+            throw new IllegalArgumentException("Invalid or expired refresh token");
         }
 
         Long userId = jwtService.getUserIdFromToken(refreshToken);
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid Token"));
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid or expired refresh token"));
 
         String hashed = tokenUtil.hashWithHmacSha256(refreshToken);
         refreshTokenRepository.findByUserIdAndHashedToken(user.getId(), hashed).orElseThrow(() -> new IllegalArgumentException("User and token doesn't match"));
 
-        refreshTokenRepository.deleteByUserIdAndHashedToken(userId, refreshToken);
+        refreshTokenRepository.deleteByUserIdAndHashedToken(userId, hashed);
 
         String accessToken = jwtService.generateAccessToken(user.getId());
         String refresh = jwtService.generateRefreshToken(user.getId());

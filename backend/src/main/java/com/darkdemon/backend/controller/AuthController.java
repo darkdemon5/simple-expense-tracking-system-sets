@@ -34,7 +34,12 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    private ResponseEntity<?> signIn(LoginDTO loginDTO){
+    private ResponseEntity<?> signIn(LoginDTO loginDTO) {
         return authService.signIn(loginDTO);
+    }
+
+    @PostMapping("/refresh")
+    private ResponseEntity<?> refresh(@RequestBody String refreshToken) {
+        return authService.refresh(refreshToken);
     }
 }

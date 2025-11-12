@@ -18,20 +18,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    public JwtAuthFilter(JwtService jwtService){
+    public JwtAuthFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
-            if(jwtService.validateAccessToken(authHeader)){
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            if (jwtService.validateAccessToken(authHeader)) {
                 Long userId = jwtService.getUserIdFromToken(authHeader);
                 Authentication auth = new UsernamePasswordAuthenticationToken(userId, null);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
-        filterChain.doFilter(request, response );
+        filterChain.doFilter(request, response);
     }
 }
