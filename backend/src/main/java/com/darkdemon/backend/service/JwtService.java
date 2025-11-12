@@ -3,7 +3,6 @@ package com.darkdemon.backend.service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,9 @@ public class JwtService {
 
     @Getter
     private final SecretKey secretKey;
-    private static final long ACCESS_TOKEN_VALIDITY_MS = Duration.ofMinutes(15).toMillis();
-    private static final long REFRESHER_TOKEN_VALIDITY_MS = Duration.ofDays(30).toMillis();
+    private final long ACCESS_TOKEN_VALIDITY_MS = Duration.ofMinutes(15).toMillis();
+    @Getter
+    private final long REFRESHER_TOKEN_VALIDITY_MS = Duration.ofDays(30).toMillis();
 
     public JwtService(@Value("${SECRET_KEY_BASE64}") String jwtSecret) {
         byte[] decodedKey = Base64.getDecoder().decode(jwtSecret);
@@ -40,7 +40,7 @@ public class JwtService {
         return generateToken(userId, "access", ACCESS_TOKEN_VALIDITY_MS);
     }
 
-    public String generateRefresherToken(Long userId) {
+    public String generateRefreshToken(Long userId) {
         return generateToken(userId, "refresh", REFRESHER_TOKEN_VALIDITY_MS);
     }
 

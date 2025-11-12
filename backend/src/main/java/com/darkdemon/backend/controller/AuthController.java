@@ -1,5 +1,6 @@
 package com.darkdemon.backend.controller;
 
+import com.darkdemon.backend.dto.LoginDTO;
 import com.darkdemon.backend.dto.UserDTO;
 import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.service.AuthService;
@@ -28,7 +29,12 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    private ResponseEntity<String> signUp(@Valid @RequestBody UserDTO userdto) {
+    private ResponseEntity<?> signUp(@Valid @RequestBody UserDTO userdto) {
         return authService.signUp(userdto);
+    }
+
+    @PostMapping("/signin")
+    private ResponseEntity<?> signIn(LoginDTO loginDTO){
+        return authService.signIn(loginDTO);
     }
 }

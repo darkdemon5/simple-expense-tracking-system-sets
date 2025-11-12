@@ -37,4 +37,6 @@ public class User {
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
     private List<Expense> expenseList;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private RefreshToken refreshToken;
 }

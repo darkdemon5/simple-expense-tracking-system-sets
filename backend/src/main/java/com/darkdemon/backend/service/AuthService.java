@@ -1,33 +1,45 @@
 package com.darkdemon.backend.service;
 
+import com.darkdemon.backend.dto.LoginDTO;
+import com.darkdemon.backend.dto.TokenResponseDTO;
 import com.darkdemon.backend.dto.UserDTO;
+import com.darkdemon.backend.model.RefreshToken;
 import com.darkdemon.backend.model.User;
+import com.darkdemon.backend.repository.RefreshTokenRepository;
 import com.darkdemon.backend.repository.UserRepository;
 import com.darkdemon.backend.security.HashEncoder;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.darkdemon.backend.security.TokenUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
-//    @Autowired
-    HashEncoder encoder;
-//    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final HashEncoder encoder;
+    private final JwtService jwtService;
+    private final TokenUtil tokenUtil;
+    private final RefreshTokenRepository refreshTokenRepository;
+
+    public AuthService(UserRepository userRepository, HashEncoder encoder, JwtService jwtService, TokenUtil tokenUtil, RefreshTokenRepository refreshTokenRepository){
+        this.userRepository = userRepository;
+        this.encoder = encoder;
+        this.jwtService = jwtService;
+        this.tokenUtil = tokenUtil;
+        this.refreshTokenRepository = refreshTokenRepository;
+    }
 
     public List<User> getUser() {
         return userRepository.findAll().stream().toList();
     }
 
-
-    public ResponseEntity<String> signUp(UserDTO userdto) {
+    public ResponseEntity<?> signUp(UserDTO userdto) {
         if (userRepository.existsByEmail(userdto.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already registered").toString());
         }
@@ -44,10 +56,42 @@ public class AuthService {
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "userId", user.getId()).toString());
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()).toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
 
         }
+    }
+
+    public ResponseEntity<?> signIn(LoginDTO loginDTO){
+        Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
+
+        if(userOpt.isEmpty()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Credentials"));
+        }
+
+        User user = userOpt.get();
+        if(!encoder.matchP(loginDTO.getPassword(), user.getPassword())){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error","Invalid Credentials"));
+        }
+
+        String accessToken = jwtService.generateAccessToken(user.getId());
+        String refreshToken = jwtService.generateRefreshToken(user.getId());
+
+        storeRefreshToken(user, refreshToken);
+        TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
+
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!","Keys", tokenResponse));
+    }
+
+    public void storeRefreshToken(User user, String rawRefreshToken){
+        String hashedRefreshToken = tokenUtil.hashWithHmacSha256(rawRefreshToken);
+        Instant refreshTokenExpiry = Instant.now().plus(Duration.ofMillis(jwtService.getREFRESHER_TOKEN_VALIDITY_MS()));
+
+        RefreshToken rt = new RefreshToken();
+        rt.setUser(user);
+        rt.setHashedToken(hashedRefreshToken);
+        rt.setExpiresAt(refreshTokenExpiry);
+        refreshTokenRepository.save(rt);
     }
 }
