@@ -12,6 +12,7 @@ import com.darkdemon.backend.security.TokenUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -39,6 +40,7 @@ public class AuthService {
         return userRepository.findAll().stream().toList();
     }
 
+    @Transactional
     public ResponseEntity<?> signUp(UserDTO userdto) {
         if (userRepository.existsByEmail(userdto.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already registered").toString());
@@ -63,6 +65,7 @@ public class AuthService {
         }
     }
 
+    @Transactional
     public ResponseEntity<?> signIn(LoginDTO loginDTO){
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
 
@@ -84,6 +87,7 @@ public class AuthService {
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!","Keys", tokenResponse));
     }
 
+    @Transactional
     public void storeRefreshToken(User user, String rawRefreshToken){
         String hashedRefreshToken = tokenUtil.hashWithHmacSha256(rawRefreshToken);
         Instant refreshTokenExpiry = Instant.now().plus(Duration.ofMillis(jwtService.getREFRESHER_TOKEN_VALIDITY_MS()));
@@ -93,5 +97,27 @@ public class AuthService {
         rt.setHashedToken(hashedRefreshToken);
         rt.setExpiresAt(refreshTokenExpiry);
         refreshTokenRepository.save(rt);
+    }
+
+    @Transactional
+    public ResponseEntity<?> refresh(String refreshToken){
+        if(!jwtService.validateRefreshToken(refreshToken)){
+            throw new IllegalArgumentException("Invalid Token");
+        }
+
+        Long userId = jwtService.getUserIdFromToken(refreshToken);
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid Token"));
+
+        String hashed = tokenUtil.hashWithHmacSha256(refreshToken);
+        refreshTokenRepository.findByUserIdAndHashedToken(user.getId(), hashed).orElseThrow(() -> new IllegalArgumentException("User and token doesn't match"));
+
+        refreshTokenRepository.deleteByUserIdAndHashedToken(userId, refreshToken);
+
+        String accessToken = jwtService.generateAccessToken(user.getId());
+        String refresh = jwtService.generateRefreshToken(user.getId());
+        storeRefreshToken(user, tokenUtil.hashWithHmacSha256(refresh));
+
+        TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refresh);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!","Keys", tokenResponse));
     }
 }
