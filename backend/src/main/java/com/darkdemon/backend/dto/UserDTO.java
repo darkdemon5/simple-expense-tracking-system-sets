@@ -31,7 +31,7 @@ public class UserDTO {
     @Positive(message = "Budget must be greater than 0")
     private BigDecimal budget;
 
-    @NotNull(message = "Budget period it requirec")
+    @NotNull(message = "Budget period it required")
     private BudgetPeriodEnum budgetPeriod;
 
     @NotNull(message = "Budget start date is required")

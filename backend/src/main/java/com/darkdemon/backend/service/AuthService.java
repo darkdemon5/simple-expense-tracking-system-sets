@@ -36,8 +36,13 @@ public class AuthService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public List<User> getUser() {
-        return userRepository.findAll().stream().toList();
+    public ResponseEntity<?> getUser(String token) {
+        if(!jwtService.validateAccessToken(token)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("InValid Token");
+        }
+        Long userid = jwtService.getUserIdFromToken(token);
+        Optional<User> user = userRepository.findById(userid);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
     @Transactional
