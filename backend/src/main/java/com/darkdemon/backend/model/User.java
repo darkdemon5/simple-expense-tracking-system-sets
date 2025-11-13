@@ -1,6 +1,7 @@
 package com.darkdemon.backend.model;
 
 import com.darkdemon.backend.enums.BudgetPeriodEnum;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcType;
@@ -35,8 +36,9 @@ public class User {
     private LocalDate budgetEndDate;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Expense> expenseList;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
+    @JsonManagedReference
     private RefreshToken refreshToken;
 }

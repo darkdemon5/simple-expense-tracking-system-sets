@@ -6,14 +6,11 @@ import com.darkdemon.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -23,7 +20,7 @@ public class AuthController {
     }
 
     @GetMapping("/user")
-    private ResponseEntity<?> getUser(@AuthenticationPrincipal String token) {
+    private ResponseEntity<?> getUser(@RequestHeader("Authorization") String token) {
         return authService.getUser(token);
     }
 
@@ -33,7 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    private ResponseEntity<?> signIn(LoginDTO loginDTO) {
+    private ResponseEntity<?> signIn(@RequestBody LoginDTO loginDTO) {
         return authService.signIn(loginDTO);
     }
 

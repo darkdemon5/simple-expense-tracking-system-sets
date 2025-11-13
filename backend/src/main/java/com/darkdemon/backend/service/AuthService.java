@@ -37,8 +37,9 @@ public class AuthService {
     }
 
     public ResponseEntity<?> getUser(String token) {
-        if(!jwtService.validateAccessToken(token)){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("InValid Token");
+        Boolean doNotRun = jwtService.validateAccessToken(token);
+        if(!doNotRun){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
         }
         Long userid = jwtService.getUserIdFromToken(token);
         Optional<User> user = userRepository.findById(userid);
@@ -63,6 +64,9 @@ public class AuthService {
             user.setCreatedAt(LocalDateTime.now());
             userRepository.save(user);
 
+            refreshTokenRepository.deleteByUserId(user.getId());
+            refreshTokenRepository.flush();
+
             String accessToken = jwtService.generateAccessToken(user.getId());
             String refreshToken = jwtService.generateRefreshToken(user.getId());
             storeRefreshToken(user, refreshToken);
@@ -78,7 +82,6 @@ public class AuthService {
     @Transactional
     public ResponseEntity<?> signIn(LoginDTO loginDTO){
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
-
         if(userOpt.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Credentials"));
         }
@@ -87,6 +90,9 @@ public class AuthService {
         if(!encoder.matchP(loginDTO.getPassword(), user.getPassword())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error","Invalid Credentials"));
         }
+
+        refreshTokenRepository.deleteByUserId(user.getId());
+        refreshTokenRepository.flush();
 
         String accessToken = jwtService.generateAccessToken(user.getId());
         String refreshToken = jwtService.generateRefreshToken(user.getId());
@@ -117,10 +123,8 @@ public class AuthService {
         Long userId = jwtService.getUserIdFromToken(refreshToken);
         User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid or expired refresh token"));
 
-        String hashed = tokenUtil.hashWithHmacSha256(refreshToken);
-        refreshTokenRepository.findByUserIdAndHashedToken(user.getId(), hashed).orElseThrow(() -> new IllegalArgumentException("User and token doesn't match"));
-
-        refreshTokenRepository.deleteByUserIdAndHashedToken(userId, hashed);
+        refreshTokenRepository.deleteByUserId(userId);
+        refreshTokenRepository.flush();
 
         String accessToken = jwtService.generateAccessToken(user.getId());
         String refresh = jwtService.generateRefreshToken(user.getId());

@@ -9,7 +9,6 @@ import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Getter

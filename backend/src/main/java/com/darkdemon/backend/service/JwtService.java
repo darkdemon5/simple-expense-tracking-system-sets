@@ -83,14 +83,16 @@ public class JwtService {
     }
 
     private Claims parseAllClaims(String token) {
-        String rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         try {
+        String rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
             return Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
                     .parseSignedClaims(rawToken)
                     .getPayload();
         } catch (Exception e) {
+            System.err.println("❌ Error: " + e.getClass().getName() + " - " + e.getMessage());
+//            e.printStackTrace();
             return null;
         }
 
