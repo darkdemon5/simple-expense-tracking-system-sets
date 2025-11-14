@@ -10,4 +10,6 @@ import java.util.List;
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
     List<Expense> getExpenseByUser_Id(Long userId);
+
+    Object getExpenseById(Long id);
 }

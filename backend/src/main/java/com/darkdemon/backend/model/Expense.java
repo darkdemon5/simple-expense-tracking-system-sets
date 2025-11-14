@@ -1,6 +1,7 @@
 package com.darkdemon.backend.model;
 
 import com.darkdemon.backend.enums.PaymentMethodEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcType;
@@ -22,13 +23,16 @@ public class Expense {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
     private String title;
     private String description;
     private String category;
-    private BigDecimal amount;
+    private BigDecimal expenseAmount;
     @Column(name = "created_date")
     private LocalDateTime createdDate;
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
     @Column(name = "expense_date")
     private LocalDate expenseDate;
     @Enumerated(EnumType.STRING)

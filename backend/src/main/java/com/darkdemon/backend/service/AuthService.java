@@ -51,11 +51,14 @@ public class AuthService {
         }
 
         try {
+            //taking info from userdto and storing it in user and repository
             jwtService.saveUser(userdto);
+
             User user = new User();
+            //Deleting previous refresh tokens
             refreshTokenRepository.deleteByUserId(user.getId());
             refreshTokenRepository.flush();
-
+            //Generating refresh and access tokens
             String accessToken = jwtService.generateAccessToken(user.getId());
             String refreshToken = jwtService.generateRefreshToken(user.getId());
             storeRefreshToken(user, refreshToken);

@@ -37,6 +37,7 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Expense> expenseList;
     @OneToOne(mappedBy = "user")
     @JsonManagedReference
