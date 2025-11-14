@@ -5,7 +5,6 @@ import com.darkdemon.backend.dto.UserDTO;
 import com.darkdemon.backend.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
