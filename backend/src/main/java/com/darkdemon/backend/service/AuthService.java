@@ -53,17 +53,8 @@ public class AuthService {
         }
 
         try {
+            jwtService.saveUser(userdto);
             User user = new User();
-            user.setName(userdto.getName());
-            user.setEmail(userdto.getEmail());
-            user.setPassword(encoder.encode(userdto.getPassword()));
-            user.setBudget(userdto.getBudget());
-            user.setBudgetPeriod(userdto.getBudgetPeriod());
-            user.setBudgetStartDate(userdto.getBudgetStartDate());
-            user.setBudgetEndDate(userdto.getBudgetEndDate());
-            user.setCreatedAt(LocalDateTime.now());
-            userRepository.save(user);
-
             refreshTokenRepository.deleteByUserId(user.getId());
             refreshTokenRepository.flush();
 
@@ -132,5 +123,34 @@ public class AuthService {
 
         TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refresh);
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!","Keys", tokenResponse));
+    }
+
+    @Transactional
+    public ResponseEntity<?> updateUser(String token ,UserDTO userdto){
+        if(!jwtService.validateAccessToken(token)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
+        }
+        try {
+            jwtService.saveUser(userdto);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Updated Successfully"));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Update Failed"));
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteUser(String token) {
+        if(!jwtService.validateAccessToken(token)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
+        }
+        try {
+            userRepository.deleteById(jwtService.getUserIdFromToken(token));
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Deleted Successfully"));
+        }
+        catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Error while deleting user"));
+        }
+
     }
 }

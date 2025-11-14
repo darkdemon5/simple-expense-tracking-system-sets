@@ -1,5 +1,9 @@
 package com.darkdemon.backend.service;
 
+import com.darkdemon.backend.dto.UserDTO;
+import com.darkdemon.backend.model.User;
+import com.darkdemon.backend.repository.UserRepository;
+import com.darkdemon.backend.security.HashEncoder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Date;
 
@@ -20,10 +25,14 @@ public class JwtService {
     private final long ACCESS_TOKEN_VALIDITY_MS = Duration.ofMinutes(15).toMillis();
     @Getter
     private final long REFRESHER_TOKEN_VALIDITY_MS = Duration.ofDays(30).toMillis();
+    UserRepository userRepository;
+    private final HashEncoder encoder;
 
-    public JwtService(@Value("${SECRET_KEY_BASE64}") String jwtSecret) {
+    public JwtService(@Value("${SECRET_KEY_BASE64}") String jwtSecret, UserRepository userRepository, HashEncoder encoder) {
         byte[] decodedKey = Base64.getDecoder().decode(jwtSecret);
         this.secretKey = Keys.hmacShaKeyFor(decodedKey);
+        this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
     //Token Generation
@@ -48,28 +57,18 @@ public class JwtService {
 
     //Token Validation
     public Boolean validateAccessToken(String token) {
-        Claims claims = parseAllClaims(token);
-        if (claims == null) {
+        String tokenType = extractType(token);
+        if(tokenType.equals("false")){
             return false;
         }
-        Object tokenTypeObj = claims.get("type");
-        if (tokenTypeObj == null) {
-            return false;
-        }
-        String tokenType = tokenTypeObj.toString();
         return "access".equals(tokenType);
     }
 
     public Boolean validateRefreshToken(String token) {
-        Claims claims = parseAllClaims(token);
-        if (claims == null) {
+        String tokenType = extractType(token);
+        if(tokenType.equals("false")){
             return false;
         }
-        Object tokenTypeObj = claims.get("type");
-        if (tokenTypeObj == null) {
-            return false;
-        }
-        String tokenType = tokenTypeObj.toString();
         return "refresh".equals(tokenType);
     }
 
@@ -95,6 +94,39 @@ public class JwtService {
 //            e.printStackTrace();
             return null;
         }
+
+    }
+
+    private Boolean validateUser(String token){
+        return userRepository.existsById(getUserIdFromToken(token));
+    }
+
+    private String extractType(String token){
+        Claims claims = parseAllClaims(token);
+        if (claims == null) {
+            return "false";
+        }
+        Object tokenTypeObj = claims.get("type");
+        if (tokenTypeObj == null) {
+            return "false";
+        }
+        if (!validateUser(token)){
+            return "false";
+        }
+        return tokenTypeObj.toString();
+    }
+
+    public void saveUser(UserDTO userdto){
+        User user = new User();
+        user.setName(userdto.getName());
+        user.setEmail(userdto.getEmail());
+        user.setPassword(encoder.encode(userdto.getPassword()));
+        user.setBudget(userdto.getBudget());
+        user.setBudgetPeriod(userdto.getBudgetPeriod());
+        user.setBudgetStartDate(userdto.getBudgetStartDate());
+        user.setBudgetEndDate(userdto.getBudgetEndDate());
+        user.setCreatedAt(LocalDateTime.now());
+        userRepository.save(user);
 
     }
 
