@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -93,7 +92,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void storeRefreshToken(User user, String rawRefreshToken){
+    protected void storeRefreshToken(User user, String rawRefreshToken){
         String hashedRefreshToken = tokenUtil.hashWithHmacSha256(rawRefreshToken);
         Instant refreshTokenExpiry = Instant.now().plus(Duration.ofMillis(jwtService.getREFRESHER_TOKEN_VALIDITY_MS()));
 

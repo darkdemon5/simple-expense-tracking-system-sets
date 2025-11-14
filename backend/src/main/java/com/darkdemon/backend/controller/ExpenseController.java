@@ -1,20 +1,21 @@
 package com.darkdemon.backend.controller;
 
-import com.darkdemon.backend.model.Expense;
-import com.darkdemon.backend.service.ExpesneService;
+import com.darkdemon.backend.service.ExpenseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 public class ExpenseController {
 
-    ExpesneService expesneService;
+    ExpenseService expenseService;
+    public ExpenseController(ExpenseService expenseService) {
+        this.expenseService = expenseService;
+    }
 
     @GetMapping("/Expenses")
-    public List<Expense> getExpense() {
-        return expesneService.getExpense();
+    public ResponseEntity<?> getExpense(@RequestHeader("Authorization") String token) {
+        return expenseService.getExpenses(token);
     }
 }

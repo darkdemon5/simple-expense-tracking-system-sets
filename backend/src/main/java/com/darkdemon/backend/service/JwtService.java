@@ -58,7 +58,7 @@ public class JwtService {
     //Token Validation
     public Boolean validateAccessToken(String token) {
         String tokenType = extractType(token);
-        if(tokenType.equals("false")){
+        if (tokenType.equals("false")) {
             return false;
         }
         return "access".equals(tokenType);
@@ -66,7 +66,7 @@ public class JwtService {
 
     public Boolean validateRefreshToken(String token) {
         String tokenType = extractType(token);
-        if(tokenType.equals("false")){
+        if (tokenType.equals("false")) {
             return false;
         }
         return "refresh".equals(tokenType);
@@ -83,7 +83,7 @@ public class JwtService {
 
     private Claims parseAllClaims(String token) {
         try {
-        String rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+            String rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
             return Jwts.parser()
                     .verifyWith(secretKey)
                     .build()
@@ -97,11 +97,11 @@ public class JwtService {
 
     }
 
-    private Boolean validateUser(String token){
+    private Boolean validateUser(String token) {
         return userRepository.existsById(getUserIdFromToken(token));
     }
 
-    private String extractType(String token){
+    private String extractType(String token) {
         Claims claims = parseAllClaims(token);
         if (claims == null) {
             return "false";
@@ -110,13 +110,13 @@ public class JwtService {
         if (tokenTypeObj == null) {
             return "false";
         }
-        if (!validateUser(token)){
+        if (!validateUser(token)) {
             return "false";
         }
         return tokenTypeObj.toString();
     }
 
-    public void saveUser(UserDTO userdto){
+    public void saveUser(UserDTO userdto) {
         User user = new User();
         user.setName(userdto.getName());
         user.setEmail(userdto.getEmail());
