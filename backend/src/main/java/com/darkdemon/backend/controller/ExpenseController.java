@@ -33,4 +33,9 @@ public class ExpenseController {
     private ResponseEntity<?> updateExpense(@RequestHeader("Authorization") String token, @RequestBody ExpenseDTO expenseDTO){
         return expenseService.updateExpense(token, expenseDTO);
     }
+
+    @DeleteMapping("/Delete/{id}")
+    private ResponseEntity<?> deleteExpense(@RequestHeader("Authorization") String token,@PathVariable Long id){
+        return expenseService.deleteExpense(token, id);
+    }
 }

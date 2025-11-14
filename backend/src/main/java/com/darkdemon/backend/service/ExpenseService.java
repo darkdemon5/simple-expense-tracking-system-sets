@@ -6,6 +6,7 @@ import com.darkdemon.backend.repository.ExpenseRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class ExpenseService {
         this.jwtService = jwtService;
     }
 
-
+    @Transactional
     public ResponseEntity<?> getExpenses(String token) {
         if(!jwtService.validateAccessToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
@@ -28,6 +29,7 @@ public class ExpenseService {
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("Expenses", expenseRepository.getExpenseByUser_Id(jwtService.getUserIdFromToken(token))));
     }
 
+    @Transactional
     public ResponseEntity<?> getExpense(String token, Long id) {
         if(!jwtService.validateAccessToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
@@ -39,6 +41,7 @@ public class ExpenseService {
         }
     }
 
+    @Transactional
     public ResponseEntity<?> createExpense(String token ,ExpenseDTO expenseDTO){
         if(!jwtService.validateAccessToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
@@ -47,6 +50,7 @@ public class ExpenseService {
         return getResponseEntity(expenseDTO);
     }
 
+    @Transactional
     public ResponseEntity<?> updateExpense(String token, ExpenseDTO expenseDTO) {
         if(!jwtService.validateAccessToken(token)){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token!"));
@@ -55,7 +59,8 @@ public class ExpenseService {
 
     }
 
-    private ResponseEntity<?> getResponseEntity(ExpenseDTO expenseDTO) {
+    @Transactional
+    protected ResponseEntity<?> getResponseEntity(ExpenseDTO expenseDTO) {
         try{
             Expense expense = new Expense();
             expense.setTitle(expenseDTO.getTitle());
@@ -73,5 +78,15 @@ public class ExpenseService {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("an error occurred", e.getMessage()));
         }
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteExpense(String token, Long id) {
+        if(!jwtService.validateAccessToken(token)){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token!!"));
+        }
+        expenseRepository.deleteById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Expense Deleted Successfully"));
     }
 }
