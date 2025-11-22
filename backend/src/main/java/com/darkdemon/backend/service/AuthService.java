@@ -48,7 +48,6 @@ public class AuthService {
         if (userRepository.existsByEmail(userdto.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already registered").toString());
         }
-
         try {
             //taking info from userdto and storing it in user and repository
             User user = jwtService.saveUser(userdto);

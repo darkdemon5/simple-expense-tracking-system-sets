@@ -47,7 +47,7 @@ public class UpdateService {
 
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Updated Successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Update Failed"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }
 
