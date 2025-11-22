@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public class ExpenseController {
 
     ExpenseService expenseService;
+
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
     }
@@ -20,22 +21,22 @@ public class ExpenseController {
     }
 
     @GetMapping("/Expense/{id}")
-    private ResponseEntity<?> getExpense(@RequestHeader("Authorization") String token,@PathVariable Long id){
+    private ResponseEntity<?> getExpense(@RequestHeader("Authorization") String token, @PathVariable Long id) {
         return expenseService.getExpense(token, id);
     }
 
     @PostMapping("/Create")
-    private ResponseEntity<?> createExpense(@RequestHeader("Authorization") String token, @RequestBody ExpenseDTO expenseDTO){
+    private ResponseEntity<?> createExpense(@RequestHeader("Authorization") String token, @RequestBody ExpenseDTO expenseDTO) {
         return expenseService.createExpense(token, expenseDTO);
     }
 
     @PutMapping("/Update")
-    private ResponseEntity<?> updateExpense(@RequestHeader("Authorization") String token, @RequestBody ExpenseDTO expenseDTO){
+    private ResponseEntity<?> updateExpense(@RequestHeader("Authorization") String token, @RequestBody ExpenseDTO expenseDTO) {
         return expenseService.updateExpense(token, expenseDTO);
     }
 
     @DeleteMapping("/Delete/{id}")
-    private ResponseEntity<?> deleteExpense(@RequestHeader("Authorization") String token,@PathVariable Long id){
+    private ResponseEntity<?> deleteExpense(@RequestHeader("Authorization") String token, @PathVariable Long id) {
         return expenseService.deleteExpense(token, id);
     }
 }

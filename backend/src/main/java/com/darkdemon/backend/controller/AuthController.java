@@ -38,13 +38,8 @@ public class AuthController {
         return authService.refresh(refreshToken);
     }
 
-    @PutMapping("/update")
-    private ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody UserDTO userDTO){
-        return authService.updateUser(token, userDTO);
-    }
-
     @DeleteMapping("/delete")
-    private ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token){
+    private ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
         return authService.deleteUser(token);
     }
 }

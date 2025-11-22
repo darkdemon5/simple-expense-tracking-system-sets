@@ -1,6 +1,7 @@
 package com.darkdemon.backend.dto;
 
 import com.darkdemon.backend.enums.BudgetPeriodEnum;
+import com.darkdemon.backend.model.User;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserResponseDTO {
 
     private Long id;
 
@@ -24,10 +25,6 @@ public class UserDTO {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 18, message = "Password must be between 6 and 18")
-    private String password;
 
     @NotNull(message = "Budget is required")
     @Min(value = 0, message = "Budget must be greater than 0")
@@ -44,12 +41,23 @@ public class UserDTO {
 
     private LocalDateTime createdAt;
 
-    @AssertTrue(message = "Budget end date must be after start date")
-    private boolean isEndDateValid() {
-        if (budgetStartDate == null || budgetEndDate == null) {
-            return true;
-        }
-        return budgetEndDate.isAfter(budgetStartDate);
+//    @AssertTrue(message = "Budget end date must be after start date")
+//    private boolean isEndDateValid() {
+//        if (budgetStartDate == null || budgetEndDate == null) {
+//            return true;
+//        }
+//        return budgetEndDate.isAfter(budgetStartDate);
+//    }
+
+    public UserResponseDTO(User user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.budget = user.getBudget();
+        this.budgetPeriod = user.getBudgetPeriod();
+        this.budgetStartDate = user.getBudgetStartDate();
+        this.budgetEndDate = user.getBudgetEndDate();
+        this.createdAt = user.getCreatedAt();
     }
 
 }

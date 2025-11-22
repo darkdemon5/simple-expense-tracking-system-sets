@@ -116,7 +116,8 @@ public class JwtService {
         return tokenTypeObj.toString();
     }
 
-    public void saveUser(UserDTO userdto) {
+
+    public User saveUser(UserDTO userdto) {
         User user = new User();
         user.setName(userdto.getName());
         user.setEmail(userdto.getEmail());
@@ -128,7 +129,6 @@ public class JwtService {
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
+        return user;
     }
-
-
 }
