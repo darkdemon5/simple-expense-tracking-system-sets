@@ -44,8 +44,8 @@ public class UpdateService {
                 user.setBudgetEndDate(userUpdateDTO.getBudgetEndDate());
             }
             userRepository.save(user);
-
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Updated Successfully"));
+            UserUpdateDTO userUpdateDto = new UserUpdateDTO(user);
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Updated Successfully", "Updated Data", userUpdateDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }

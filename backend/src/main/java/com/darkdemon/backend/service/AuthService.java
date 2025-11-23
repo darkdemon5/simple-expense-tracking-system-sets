@@ -39,8 +39,9 @@ public class AuthService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
         }
         Long userid = jwtService.getUserIdFromToken(token);
-        Optional<User> user = userRepository.findById(userid);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        User user = userRepository.findById(userid).orElseThrow(() -> new IllegalArgumentException("Invalid Credentials"));
+        UserResponseDTO userResponseDTO = new UserResponseDTO(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userResponseDTO);
     }
 
     @Transactional
@@ -120,16 +121,14 @@ public class AuthService {
 
     @Transactional
     public ResponseEntity<?> deleteUser(String token) {
-        if (!jwtService.validateAccessToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
-        }
         try {
-            userRepository.deleteById(jwtService.getUserIdFromToken(token));
+            Long id = jwtService.getUserIdFromToken(token);
+            User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User Not Found!"));
+            userRepository.delete(user);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Deleted Successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Error while deleting user"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
         }
-
     }
 
 

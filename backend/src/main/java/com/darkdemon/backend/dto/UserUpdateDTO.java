@@ -1,6 +1,7 @@
 package com.darkdemon.backend.dto;
 
 import com.darkdemon.backend.enums.BudgetPeriodEnum;
+import com.darkdemon.backend.model.User;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,4 +31,12 @@ public class UserUpdateDTO {
 
     @NotNull(message = "Budget end date is required")
     private LocalDate budgetEndDate;
+
+    public UserUpdateDTO(User user){
+        this.setName(user.getName());
+        this.setBudget(user.getBudget());
+        this.setBudgetPeriod(user.getBudgetPeriod());
+        this.setBudgetStartDate(user.getBudgetStartDate());
+        this.setBudgetEndDate(user.getBudgetEndDate());
+    }
 }

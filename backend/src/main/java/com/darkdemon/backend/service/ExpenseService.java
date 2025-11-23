@@ -68,7 +68,7 @@ public class ExpenseService {
         expense.setDescription(expenseDTO.getDescription());
         expense.setCategory(expenseDTO.getCategory());
         expense.setExpenseAmount(expenseDTO.getExpenseAmount());
-        expense.setCreatedDate(expenseDTO.getCreatedDate());
+        expense.setCreatedDate(LocalDateTime.now());
         expense.setExpenseDate(expenseDTO.getExpenseDate());
         expense.setPaymentMethod(expenseDTO.getPaymentMethod());
         expense.setIsDeleted(expenseDTO.getIsDeleted());
