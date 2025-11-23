@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class ExpenseService {
@@ -30,16 +31,14 @@ public class ExpenseService {
 
     @Transactional
     public ResponseEntity<?> getExpenses(String token) {
-        if (!jwtService.validateAccessToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
-        }
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("Expenses", expenseRepository.getExpenseByUser_Id(jwtService.getUserIdFromToken(token))));
     }
 
     @Transactional
     public ResponseEntity<?> getExpense(String token, Long id) {
-        if (!jwtService.validateAccessToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
+        Expense expense = expenseRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No expense found"));
+        if(!Objects.equals(expense.getUser().getId(), jwtService.getUserIdFromToken(token))){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access Denied!");
         }
         try {
             return ResponseEntity.status(HttpStatus.OK).body(expenseRepository.getExpenseById(id));
@@ -50,9 +49,6 @@ public class ExpenseService {
 
     @Transactional
     public ResponseEntity<?> createExpense(String token, ExpenseDTO expenseDTO) {
-        if (!jwtService.validateAccessToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token"));
-        }
         try {
             Long userId = jwtService.getUserIdFromToken(token);
             User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -82,10 +78,10 @@ public class ExpenseService {
     @Transactional
     public ResponseEntity<?> updateExpense(String token, Long id, UpdateExpenseDTO updateExpenseDTO) {
         try {
-            if (!jwtService.validateAccessToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token!"));
-            }
             Expense expense = expenseRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No expense found"));
+            if(!expense.getUser().getId().equals(jwtService.getUserIdFromToken(token))){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access Denied!");
+            }
             if (updateExpenseDTO.getTitle() != null && !updateExpenseDTO.getTitle().isBlank()) {
                 expense.setTitle(updateExpenseDTO.getTitle());
             }
@@ -114,8 +110,9 @@ public class ExpenseService {
 
     @Transactional
     public ResponseEntity<?> deleteExpense(String token, Long id) {
-        if (!jwtService.validateAccessToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Token!!"));
+        Expense expense = expenseRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No expense found"));
+        if(!Objects.equals(expense.getUser().getId(), jwtService.getUserIdFromToken(token))){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access Denied!");
         }
         expenseRepository.deleteById(id);
 

@@ -93,7 +93,7 @@ public class UpdateService {
             if (!hashEncoder.matchP(updatePasswordDTO.getCurrentPassword(), user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Password Doesn't match"));
             }
-            if (hashEncoder.matchP(updatePasswordDTO.getCurrentPassword(), user.getPassword())) {
+            if (hashEncoder.matchP(updatePasswordDTO.getNewPassword(), user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "New Password is same as old password"));
             }
             if (updatePasswordDTO.getNewPassword().length() < 6 || updatePasswordDTO.getNewPassword().length() > 18) {
