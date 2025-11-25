@@ -53,7 +53,7 @@ const Login = () => {
           </label>
           <div className="w-full flex justify-end"><p className="cursor-pointer text-sm text-[#3F72AF]">Forgot Password?</p></div>
             <button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white">Submit</button>
-          <div><p className="cursor-pointer">Already got account? <a className="text-[#3F72AF]">SignUp</a></p></div>
+          <div><p className="cursor-pointer">New User? <a className="text-[#3F72AF]">SignUp</a></p></div>
         </div>
       </div>
     </div>
