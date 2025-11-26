@@ -2,6 +2,23 @@ import React from "react";
 // name, email, password, budget, budget Period, budgetstartdate, budgetenddate
 
 const SignUp = () => {
+  const checkValidation = () => {
+  const name = document.getElementById("Name").value;
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("pass").value;
+  const cpass = document.getElementById("cpass").value;
+
+  if (!name || !email || !pass || !cpass) {
+    alert("All fields are required");
+    return;
+  }
+  if (pass !== cpass) {
+    alert("Passwords do not match");
+    return;
+  }
+  alert("Form submitted successfully!");
+}
+
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center mx-auto bg-[#DBE2EF]">
       <div className="flex flex-col gap-4 border p-10 rounded-lg shadow-lg justify-center items-center mx-auto bg-white">
@@ -14,7 +31,7 @@ const SignUp = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6"
+              className="size-6 opacity-50"
             >
               <path
                 stroke-linecap="round"
@@ -23,7 +40,7 @@ const SignUp = () => {
               />
             </svg>
 
-            <input type="Text" placeholder="Full name please" required />
+            <input type="Text" placeholder="Full name please" required id="Name" title="Put a name so that we can address you properly"/>
           </label>
           <label className="input validator text-black border-black">
             <svg
@@ -42,7 +59,7 @@ const SignUp = () => {
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </g>
             </svg>
-            <input type="email" placeholder="mail@site.com" required />
+            <input type="email" placeholder="mail@site.com" required id="email" title="So we can know its you!"/>
           </label>
           <label className="input validator text-black border-black">
             <svg
@@ -65,19 +82,48 @@ const SignUp = () => {
               type="password"
               required
               placeholder="Password"
-              minlength="8"
+              minLength="8"
               pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
               title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+              id="pass"
             />
           </label>
           <label className="input validator text-black border-black">
+            <svg
+              className="h-[1.5em] opacity-50"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+            >
+              <g
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                strokeWidth="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
+                <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+              </g>
+            </svg>
+            <input
+              type="password"
+              required
+              placeholder="Confirm Password"
+              minLength="8"
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+              id="cpass"
+            />
+          </label>
+
+          {/* <label className="input validator text-black border-black">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6"
+              class="size-6 opacity-50"
             >
               <path
                 stroke-linecap="round"
@@ -94,7 +140,7 @@ const SignUp = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6 mr-1"
+              class="size-6 mr-1 opacity-50"
             >
               <path
                 stroke-linecap="round"
@@ -116,7 +162,7 @@ const SignUp = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6"
+              class="size-6 opacity-50"
             >
               <path
                 stroke-linecap="round"
@@ -133,7 +179,7 @@ const SignUp = () => {
               viewBox="0 0 24 24"
               stroke-width="1.5"
               stroke="currentColor"
-              class="size-6"
+              class="size-6 opacity-50"
             >
               <path
                 stroke-linecap="round"
@@ -142,12 +188,12 @@ const SignUp = () => {
               />
             </svg>
             <input type="date" placeholder="Budget End Date" />
-          </label>
-          <button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white">
+          </label> */}
+          <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white" title="Give me your details!!!" onClick={checkValidation}>
             Submit
           </button>
           <div>
-            <p className="cursor-pointer">
+            <p className="cursor-pointer justify-center">
               Already got account? <a className="text-[#3F72AF]">SignIn</a>
             </p>
           </div>
