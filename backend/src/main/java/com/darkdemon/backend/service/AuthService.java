@@ -33,17 +33,6 @@ public class AuthService {
         this.refreshTokenRepository = refreshTokenRepository;
     }
 
-    public ResponseEntity<?> getUser(String token) {
-        Boolean doNotRun = jwtService.validateAccessToken(token);
-        if (!doNotRun) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Token");
-        }
-        Long userid = jwtService.getUserIdFromToken(token);
-        User user = userRepository.findById(userid).orElseThrow(() -> new IllegalArgumentException("Invalid Credentials"));
-        UserResponseDTO userResponseDTO = new UserResponseDTO(user);
-        return ResponseEntity.status(HttpStatus.OK).body(userResponseDTO);
-    }
-
     @Transactional
     public ResponseEntity<?> signUp(UserDTO userdto) {
         if (userRepository.existsByEmail(userdto.getEmail())) {
@@ -56,7 +45,7 @@ public class AuthService {
             String refreshToken = jwtService.generateRefreshToken(user.getId());
             storeRefreshToken(user, refreshToken);
             TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
-            UserResponseDTO urDto = new UserResponseDTO(user);
+            UserResponseDTO urDto = UserResponseDTO.addData(user);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "Keys", tokenResponse, "User", urDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));

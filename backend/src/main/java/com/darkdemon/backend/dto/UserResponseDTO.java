@@ -49,15 +49,18 @@ public class UserResponseDTO {
 //        return budgetEndDate.isAfter(budgetStartDate);
 //    }
 
-    public UserResponseDTO(User user) {
-        this.id = user.getId();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.budget = user.getBudget();
-        this.budgetPeriod = user.getBudgetPeriod();
-        this.budgetStartDate = user.getBudgetStartDate();
-        this.budgetEndDate = user.getBudgetEndDate();
-        this.createdAt = user.getCreatedAt();
+    public static UserResponseDTO addData(User user) {
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.id = user.getId();
+        dto.name = user.getName();
+        dto.email = user.getEmail();
+        dto.budget = user.getBudget();
+        dto.budgetPeriod = user.getBudgetPeriod();
+        dto.budgetStartDate = user.getBudgetStartDate();
+        dto.budgetEndDate = user.getBudgetEndDate();
+        dto.createdAt = user.getCreatedAt();
+
+        return dto;
     }
 
 }

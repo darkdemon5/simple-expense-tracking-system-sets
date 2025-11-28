@@ -122,10 +122,6 @@ public class JwtService {
         user.setName(userdto.getName());
         user.setEmail(userdto.getEmail());
         user.setPassword(encoder.encode(userdto.getPassword()));
-        user.setBudget(userdto.getBudget());
-        user.setBudgetPeriod(userdto.getBudgetPeriod());
-        user.setBudgetStartDate(userdto.getBudgetStartDate());
-        user.setBudgetEndDate(userdto.getBudgetEndDate());
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 

@@ -18,11 +18,6 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("/user")
-    private ResponseEntity<?> getUser(@RequestHeader("Authorization") String token) {
-        return authService.getUser(token);
-    }
-
     @PostMapping("/signup")
     private ResponseEntity<?> signUp(@Valid @RequestBody UserDTO userdto) {
         return authService.signUp(userdto);
