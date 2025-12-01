@@ -1,5 +1,7 @@
 package com.darkdemon.backend.security;
 
+import com.darkdemon.backend.model.User;
+import com.darkdemon.backend.repository.UserRepository;
 import com.darkdemon.backend.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -14,14 +16,17 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.NoSuchElementException;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
-    public JwtAuthFilter(JwtService jwtService) {
+    public JwtAuthFilter(JwtService jwtService, UserRepository userRepository) {
         this.jwtService = jwtService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -31,6 +36,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = authHeader.substring(7);
             if (jwtService.validateAccessToken(token)) {
                 Long userId = jwtService.getUserIdFromToken(token);
+                User user = userRepository.findById(userId).orElseThrow();
                 Authentication auth = new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }

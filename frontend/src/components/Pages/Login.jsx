@@ -1,15 +1,24 @@
 import React from "react";
+import { Link } from "react-router";
+import { login } from "../../services/authService";
 
 const Login = () => {
   const checkValidation = () => {
   const email = document.getElementById("email").value;
   const pass = document.getElementById("pass").value;
 
-  if (!name || !email || !pass || !cpass) {
+  if (!email || !pass) {
     alert("All fields are required");
     return;
   }
-  alert("Form submitted successfully!");
+  const loginData = { "email": email, "password": pass };
+  login(loginData).then((data) => {
+    console.log(data);
+    localStorage.setItem("accessToken", data.tokens.accessToken);
+    localStorage.setItem("refreshToken", data.tokens.refreshToken);
+    alert("Login successful!");
+    // Redirect to dashboard or home page
+  })
 }
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center mx-auto bg-[#DBE2EF]">
@@ -66,7 +75,7 @@ const Login = () => {
           <p className="validator-hint hidden">Required</p>
           <div className="w-full flex justify-end"><p className="cursor-pointer text-sm text-[#3F72AF]">Forgot Password?</p></div>
             <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white" title="Click me! I won't scam you ;)" onClick={checkValidation}>Submit</button>
-          <div><p className="cursor-pointer text-base mx-auto">New User? <span className="text-[#3F72AF]">SignUp</span></p></div>
+          <div><p className="cursor-pointer text-base mx-auto">New User? <Link className="text-[#3F72AF]" to="/signup">SignUp</Link></p></div>
         </div>
       </div>
     </div>

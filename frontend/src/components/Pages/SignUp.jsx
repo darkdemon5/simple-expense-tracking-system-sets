@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router";
+import { signUp } from "../../services/authService";
 // name, email, password, budget, budget Period, budgetstartdate, budgetenddate
 
 const SignUp = () => {
@@ -16,7 +18,22 @@ const SignUp = () => {
     alert("Passwords do not match");
     return;
   }
-  alert("Form submitted successfully!");
+  const userData = {
+    "name": name,
+    "email": email,
+    "password": pass
+  }
+  signUp(userData).then((data) => {
+    console.log(data);
+    localStorage.setItem("accessToken", data.tokens.accessToken);
+    localStorage.setItem("refreshToken", data.tokens.refreshToken);
+    localStorage.setItem("user", JSON.stringify(data.User));
+    alert("Sign up successful! Please log in.");
+  }).catch((error) => {
+    console.error("Error during sign up:", error);
+    alert("Sign up failed. Please try again.");
+  });
+  // alert("Form submitted successfully!");
 }
 
   return (
@@ -59,7 +76,7 @@ const SignUp = () => {
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </g>
             </svg>
-            <input type="email" placeholder="mail@site.com" required id="email" title="So we can know its you!"/>
+            <input type="email" placeholder="Example@xyz.com" required id="email" title="So we can know its you!"/>
           </label>
           <label className="input validator text-black border-black">
             <svg
@@ -115,6 +132,23 @@ const SignUp = () => {
               id="cpass"
             />
           </label>
+          <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white" title="Click me! I won't scam you ;)" onClick={checkValidation}>
+            Submit
+          </button>
+          <div>
+            <p className="cursor-pointer justify-center">
+              Already got account? <Link className="text-[#3F72AF]" to="/login">SignIn</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SignUp;
+
+
 
           {/* <label className="input validator text-black border-black">
             <svg
@@ -189,18 +223,3 @@ const SignUp = () => {
             </svg>
             <input type="date" placeholder="Budget End Date" />
           </label> */}
-          <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white" title="Give me your details!!!" onClick={checkValidation}>
-            Submit
-          </button>
-          <div>
-            <p className="cursor-pointer justify-center">
-              Already got account? <a className="text-[#3F72AF]">SignIn</a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default SignUp;
