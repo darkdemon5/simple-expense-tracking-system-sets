@@ -36,20 +36,23 @@ public class AuthService {
     @Transactional
     public ResponseEntity<?> signUp(UserDTO userdto) {
         if (userRepository.existsByEmail(userdto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already registered").toString());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already registered"));
         }
         try {
             //taking info from userdto and storing it in user and repository
             User user = jwtService.saveUser(userdto);
+
             String accessToken = jwtService.generateAccessToken(user.getId());
             String refreshToken = jwtService.generateRefreshToken(user.getId());
             storeRefreshToken(user, refreshToken);
+
             TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
+
             UserResponseDTO urDto = UserResponseDTO.addData(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "Keys", tokenResponse, "User", urDto));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "tokens", tokenResponse, "User", urDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
-
         }
     }
 
@@ -61,6 +64,7 @@ public class AuthService {
         }
 
         User user = userOpt.get();
+
         if (!encoder.matchP(loginDTO.getPassword(), user.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Credentials"));
         }
@@ -70,21 +74,25 @@ public class AuthService {
 
         String accessToken = jwtService.generateAccessToken(user.getId());
         String refreshToken = jwtService.generateRefreshToken(user.getId());
+
         storeRefreshToken(user, refreshToken);
+
         TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
 
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "Keys", tokenResponse));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "tokens", tokenResponse));
     }
 
     @Transactional
     protected void storeRefreshToken(User user, String rawRefreshToken) {
         String hashedRefreshToken = tokenUtil.hashWithHmacSha256(rawRefreshToken);
+
         Instant refreshTokenExpiry = Instant.now().plus(Duration.ofMillis(jwtService.getREFRESHER_TOKEN_VALIDITY_MS()));
 
         RefreshToken rt = new RefreshToken();
         rt.setUser(user);
         rt.setHashedToken(hashedRefreshToken);
         rt.setExpiresAt(refreshTokenExpiry);
+
         refreshTokenRepository.save(rt);
     }
 
@@ -105,20 +113,23 @@ public class AuthService {
         storeRefreshToken(user, tokenUtil.hashWithHmacSha256(refresh));
 
         TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refresh);
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "Keys", tokenResponse));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "tokens", tokenResponse));
     }
 
     @Transactional
     public ResponseEntity<?> deleteUser(String token) {
         try {
             Long id = jwtService.getUserIdFromToken(token);
+
             User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User Not Found!"));
+
             userRepository.delete(user);
+
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Deleted Successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
         }
-    }
 
+    }
 
 }
