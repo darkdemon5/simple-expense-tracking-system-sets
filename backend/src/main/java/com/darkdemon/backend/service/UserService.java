@@ -50,4 +50,21 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
         }
     }
+
+    @Transactional
+    public ResponseEntity<?> deleteUser(String token) {
+        try {
+            Long id = jwtService.getUserIdFromToken(token);
+
+            User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User Not Found!!"));
+
+            userRepository.delete(user);
+
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Deleted Successfully"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
+        }
+
+    }
+
 }

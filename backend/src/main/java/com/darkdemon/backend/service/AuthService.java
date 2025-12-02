@@ -7,6 +7,8 @@ import com.darkdemon.backend.repository.RefreshTokenRepository;
 import com.darkdemon.backend.repository.UserRepository;
 import com.darkdemon.backend.security.HashEncoder;
 import com.darkdemon.backend.security.TokenUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,30 +36,31 @@ public class AuthService {
     }
 
     @Transactional
-    public ResponseEntity<?> signUp(UserDTO userdto) {
+    public ResponseEntity<?> signUp(UserDTO userdto, HttpServletResponse response) {
         if (userRepository.existsByEmail(userdto.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already registered"));
         }
         try {
             //taking info from userdto and storing it in user and repository
             User user = jwtService.saveUser(userdto);
-
             String accessToken = jwtService.generateAccessToken(user.getId());
             String refreshToken = jwtService.generateRefreshToken(user.getId());
+
+            jwtService.setRefreshTokenCookie(response, refreshToken);
             storeRefreshToken(user, refreshToken);
 
-            TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
+//            TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
 
             UserResponseDTO urDto = UserResponseDTO.addData(user);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "tokens", tokenResponse, "User", urDto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "accesstoken", accessToken, "User", urDto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
 
     @Transactional
-    public ResponseEntity<?> signIn(LoginDTO loginDTO) {
+    public ResponseEntity<?> signIn(LoginDTO loginDTO, HttpServletResponse response) {
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Credentials"));
@@ -75,11 +78,12 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(user.getId());
         String refreshToken = jwtService.generateRefreshToken(user.getId());
 
+        jwtService.setRefreshTokenCookie(response, refreshToken);
         storeRefreshToken(user, refreshToken);
 
-        TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
+//        TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
 
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "tokens", tokenResponse));
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "accessToken", accessToken));
     }
 
     @Transactional
@@ -97,7 +101,7 @@ public class AuthService {
     }
 
     @Transactional
-    public ResponseEntity<?> refresh(String refreshToken) {
+    public ResponseEntity<?> refresh(String refreshToken, HttpServletResponse response) {
         if (!jwtService.validateRefreshToken(refreshToken)) {
             throw new IllegalArgumentException("Invalid or expired refresh token");
         }
@@ -108,28 +112,22 @@ public class AuthService {
         refreshTokenRepository.deleteByUserId(userId);
         refreshTokenRepository.flush();
 
-        String accessToken = jwtService.generateAccessToken(user.getId());
-        String refresh = jwtService.generateRefreshToken(user.getId());
-        storeRefreshToken(user, tokenUtil.hashWithHmacSha256(refresh));
+        String newAccessToken = jwtService.generateAccessToken(user.getId());
+        String newRefreshToken = jwtService.generateRefreshToken(user.getId());
 
-        TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refresh);
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "tokens", tokenResponse));
+        storeRefreshToken(user, tokenUtil.hashWithHmacSha256(newRefreshToken));
+        jwtService.setRefreshTokenCookie(response, newRefreshToken);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "accessToken", newAccessToken));
     }
 
-    @Transactional
-    public ResponseEntity<?> deleteUser(String token) {
-        try {
-            Long id = jwtService.getUserIdFromToken(token);
+    public ResponseEntity<?> logoutUser(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
 
-            User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User Not Found!"));
-
-            userRepository.delete(user);
-
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Deleted Successfully"));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
-        }
-
+        return ResponseEntity.ok("Logged out successfully");
     }
-
 }

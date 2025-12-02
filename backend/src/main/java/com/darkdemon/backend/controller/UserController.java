@@ -24,4 +24,9 @@ public class UserController {
         return userService.postExtraData(token, userExtraDataDTO);
     }
 
+    @DeleteMapping("/delete")
+    private ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token) {
+        return userService.deleteUser(token);
+    }
+
 }

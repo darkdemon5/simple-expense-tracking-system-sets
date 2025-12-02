@@ -7,6 +7,8 @@ import com.darkdemon.backend.security.HashEncoder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -126,5 +128,16 @@ public class JwtService {
         userRepository.save(user);
 
         return user;
+    }
+
+    public void setRefreshTokenCookie(HttpServletResponse response, String refreshToken){
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true); //Cannot be accessed by JavaScript
+        cookie.setSecure(false); // Only sent over HTTPS (set false for local dev)
+        cookie.setPath("/");
+        cookie.setMaxAge(30*24*60*60); // 30 days
+        cookie.setAttribute("SameSite", "Strict"); //CSRF protection
+
+        response.addCookie(cookie);
     }
 }
