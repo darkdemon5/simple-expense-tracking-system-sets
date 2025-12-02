@@ -121,6 +121,7 @@ public class AuthService {
         return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User SignIn successfully!", "accessToken", newAccessToken));
     }
 
+
     public ResponseEntity<?> logoutUser(HttpServletResponse response) {
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
