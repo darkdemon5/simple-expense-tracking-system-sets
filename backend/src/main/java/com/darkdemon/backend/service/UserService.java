@@ -2,6 +2,7 @@ package com.darkdemon.backend.service;
 
 import com.darkdemon.backend.dto.UserExtraDataDTO;
 import com.darkdemon.backend.dto.UserResponseDTO;
+import com.darkdemon.backend.exception.GlobalExceptionHandler;
 import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -15,10 +16,12 @@ import java.util.Map;
 public class UserService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
-    public UserService(JwtService jwtService, UserRepository userRepository ){
+    public UserService(JwtService jwtService, UserRepository userRepository, GlobalExceptionHandler globalExceptionHandler){
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
     public ResponseEntity<?> getUser(String token) {
@@ -47,7 +50,7 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("Message","User Data posted Successfully", "Data", userExtraDataDTO1));
         }
         catch (Exception e){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 
@@ -62,7 +65,7 @@ public class UserService {
 
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Deleted Successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
 
     }

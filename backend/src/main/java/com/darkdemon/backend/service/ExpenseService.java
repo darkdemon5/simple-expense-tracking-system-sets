@@ -2,6 +2,7 @@ package com.darkdemon.backend.service;
 
 import com.darkdemon.backend.dto.ExpenseDTO;
 import com.darkdemon.backend.dto.UpdateExpenseDTO;
+import com.darkdemon.backend.exception.GlobalExceptionHandler;
 import com.darkdemon.backend.model.Expense;
 import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.repository.ExpenseRepository;
@@ -22,11 +23,13 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
-    public ExpenseService(ExpenseRepository expenseRepository, JwtService jwtService, UserRepository userRepository) {
+    public ExpenseService(ExpenseRepository expenseRepository, JwtService jwtService, UserRepository userRepository, GlobalExceptionHandler globalExceptionHandler) {
         this.expenseRepository = expenseRepository;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
     @Transactional
@@ -43,7 +46,7 @@ public class ExpenseService {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(expenseRepository.getExpenseById(id));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("an error occurred", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 
@@ -57,7 +60,7 @@ public class ExpenseService {
 
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("Message", "Expense added Successfully", "Expense Data", expense));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("an error occurred", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 
@@ -104,7 +107,7 @@ public class ExpenseService {
             expenseRepository.save(expense);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Expense Updated Successfully", "Updated Expense", expense));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 

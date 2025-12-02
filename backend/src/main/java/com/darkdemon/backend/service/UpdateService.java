@@ -3,6 +3,7 @@ package com.darkdemon.backend.service;
 import com.darkdemon.backend.dto.UpdateEmailDTO;
 import com.darkdemon.backend.dto.UpdatePasswordDTO;
 import com.darkdemon.backend.dto.UserUpdateDTO;
+import com.darkdemon.backend.exception.GlobalExceptionHandler;
 import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.repository.UserRepository;
 import com.darkdemon.backend.security.HashEncoder;
@@ -17,10 +18,12 @@ import java.util.Map;
 public class UpdateService {
     private final UserRepository userRepository;
     private final HashEncoder hashEncoder;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
-    public UpdateService(UserRepository userRepository, HashEncoder hashEncoder) {
+    public UpdateService(UserRepository userRepository, HashEncoder hashEncoder, GlobalExceptionHandler globalExceptionHandler) {
         this.userRepository = userRepository;
         this.hashEncoder = hashEncoder;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
     @Transactional
@@ -47,7 +50,7 @@ public class UpdateService {
             UserUpdateDTO userUpdateDto = new UserUpdateDTO(user);
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "User Updated Successfully", "Updated Data", userUpdateDto));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 
@@ -78,7 +81,7 @@ public class UpdateService {
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Email updated successfully", "New currentEmail", user.getEmail()));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 
@@ -105,7 +108,7 @@ public class UpdateService {
 
             return ResponseEntity.status(HttpStatus.OK).body(Map.of("Message", "Password Updated Successfully"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 }

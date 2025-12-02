@@ -1,6 +1,7 @@
 package com.darkdemon.backend.service;
 
 import com.darkdemon.backend.dto.UserDTO;
+import com.darkdemon.backend.exception.GlobalExceptionHandler;
 import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.repository.UserRepository;
 import com.darkdemon.backend.security.HashEncoder;
@@ -29,8 +30,10 @@ public class JwtService {
     private final long REFRESHER_TOKEN_VALIDITY_MS = Duration.ofDays(30).toMillis();
     UserRepository userRepository;
     private final HashEncoder encoder;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
-    public JwtService(@Value("${SECRET_KEY_BASE64}") String jwtSecret, UserRepository userRepository, HashEncoder encoder) {
+    public JwtService(@Value("${SECRET_KEY_BASE64}") String jwtSecret, UserRepository userRepository, HashEncoder encoder, GlobalExceptionHandler globalExceptionHandler) {
+        this.globalExceptionHandler = globalExceptionHandler;
         byte[] decodedKey = Base64.getDecoder().decode(jwtSecret);
         this.secretKey = Keys.hmacShaKeyFor(decodedKey);
         this.userRepository = userRepository;
@@ -92,9 +95,8 @@ public class JwtService {
                     .parseSignedClaims(rawToken)
                     .getPayload();
         } catch (Exception e) {
-            System.err.println("❌ Error: " + e.getClass().getName() + " - " + e.getMessage());
 //            e.printStackTrace();
-            return null;
+            return (Claims) globalExceptionHandler.handleGenericException(e);
         }
 
     }

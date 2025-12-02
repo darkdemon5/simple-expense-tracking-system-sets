@@ -1,6 +1,7 @@
 package com.darkdemon.backend.service;
 
 import com.darkdemon.backend.dto.*;
+import com.darkdemon.backend.exception.GlobalExceptionHandler;
 import com.darkdemon.backend.model.RefreshToken;
 import com.darkdemon.backend.model.User;
 import com.darkdemon.backend.repository.RefreshTokenRepository;
@@ -26,13 +27,15 @@ public class AuthService {
     private final JwtService jwtService;
     private final TokenUtil tokenUtil;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
-    public AuthService(UserRepository userRepository, HashEncoder encoder, JwtService jwtService, TokenUtil tokenUtil, RefreshTokenRepository refreshTokenRepository) {
+    public AuthService(UserRepository userRepository, HashEncoder encoder, JwtService jwtService, TokenUtil tokenUtil, RefreshTokenRepository refreshTokenRepository, GlobalExceptionHandler globalExceptionHandler) {
         this.userRepository = userRepository;
         this.encoder = encoder;
         this.jwtService = jwtService;
         this.tokenUtil = tokenUtil;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.globalExceptionHandler = globalExceptionHandler;
     }
 
     @Transactional
@@ -49,13 +52,11 @@ public class AuthService {
             jwtService.setRefreshTokenCookie(response, refreshToken);
             storeRefreshToken(user, refreshToken);
 
-//            TokenResponseDTO tokenResponse = new TokenResponseDTO(accessToken, refreshToken);
-
             UserResponseDTO urDto = UserResponseDTO.addData(user);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "accesstoken", accessToken, "User", urDto));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+            return globalExceptionHandler.handleGenericException(e);
         }
     }
 
