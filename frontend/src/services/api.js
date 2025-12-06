@@ -4,7 +4,8 @@ const api = axios.create({
   baseURL:"http://localhost:8080",
   headers: {
     "Content-Type": "application/json",
-  }
+  },
+  withCredentials: true,
 })
 
 
@@ -29,15 +30,15 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        const response = await axios.post("http://localhost:8080/auth/refresh", { token: refreshToken });
+        
+        const response = await axios.post("http://localhost:8080/auth/refresh", {}, {withCredentials: true});
         const newAccessToken = response.data.accessToken;
-        const newRefreshToken = response.data.refreshToken;
-        localStorage.setItem('refreshToken', newRefreshToken);
         localStorage.setItem('accessToken', newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return api(originalRequest);
       } catch (err) {
+        localStorage.removeItem('accessToken');
+        window.location.href = '/login';
         return Promise.reject(err);
       }
     }

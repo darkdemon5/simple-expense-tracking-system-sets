@@ -1,40 +1,70 @@
 import React from "react";
 import { Link } from "react-router";
-import { signUp } from "../../services/authService";
+import { signUp } from "../services/authService";
 // name, email, password, budget, budget Period, budgetstartdate, budgetenddate
 
 const SignUp = () => {
   const checkValidation = () => {
-  const name = document.getElementById("Name").value;
-  const email = document.getElementById("email").value;
-  const pass = document.getElementById("pass").value;
-  const cpass = document.getElementById("cpass").value;
+    const name = document.getElementById("Name").value;
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("pass").value;
+    const cpass = document.getElementById("cpass").value;
 
-  if (!name || !email || !pass || !cpass) {
-    alert("All fields are required");
-    return;
-  }
-  if (pass !== cpass) {
-    alert("Passwords do not match");
-    return;
-  }
-  const userData = {
-    "name": name,
-    "email": email,
-    "password": pass
-  }
-  signUp(userData).then((data) => {
-    console.log(data);
-    localStorage.setItem("accessToken", data.tokens.accessToken);
-    localStorage.setItem("refreshToken", data.tokens.refreshToken);
-    localStorage.setItem("user", JSON.stringify(data.User));
-    alert("Sign up successful! Please log in.");
-  }).catch((error) => {
-    console.error("Error during sign up:", error);
-    alert("Sign up failed. Please try again.");
-  });
-  // alert("Form submitted successfully!");
-}
+    if (!name || !email || !pass || !cpass) {
+      alert("All fields are required");
+      return;
+    }
+    if (pass !== cpass) {
+      alert("Passwords do not match");
+      return;
+    }
+    const userData = {
+      name: name,
+      email: email,
+      password: pass,
+    };
+    signUp(userData).then((data) => {
+      if (data.error) {
+        <div role="alert" className="alert alert-error">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Error while login!!</span>
+        </div>;
+      }
+      if (data.message) {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data.User));
+        <div role="alert" className="alert alert-success">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Your purchase has been confirmed!</span>
+        </div>;
+      }
+    });
+    // alert("Form submitted successfully!");
+  };
 
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center mx-auto bg-[#DBE2EF]">
@@ -57,7 +87,13 @@ const SignUp = () => {
               />
             </svg>
 
-            <input type="Text" placeholder="Full name please" required id="Name" title="Put a name so that we can address you properly"/>
+            <input
+              type="Text"
+              placeholder="Full name please"
+              required
+              id="Name"
+              title="Put a name so that we can address you properly"
+            />
           </label>
           <label className="input validator text-black border-black">
             <svg
@@ -76,7 +112,13 @@ const SignUp = () => {
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </g>
             </svg>
-            <input type="email" placeholder="Example@xyz.com" required id="email" title="So we can know its you!"/>
+            <input
+              type="email"
+              placeholder="Example@xyz.com"
+              required
+              id="email"
+              title="So we can know its you!"
+            />
           </label>
           <label className="input validator text-black border-black">
             <svg
@@ -132,12 +174,19 @@ const SignUp = () => {
               id="cpass"
             />
           </label>
-          <button className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white" title="Click me! I won't scam you ;)" onClick={checkValidation}>
+          <button
+            className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white"
+            title="Click me! I won't scam you ;)"
+            onClick={checkValidation}
+          >
             Submit
           </button>
           <div>
             <p className="cursor-pointer justify-center">
-              Already got account? <Link className="text-[#3F72AF]" to="/login">SignIn</Link>
+              Already got account?{" "}
+              <Link className="text-[#3F72AF]" to="/login">
+                SignIn
+              </Link>
             </p>
           </div>
         </div>
@@ -148,9 +197,8 @@ const SignUp = () => {
 
 export default SignUp;
 
-
-
-          {/* <label className="input validator text-black border-black">
+{
+  /* <label className="input validator text-black border-black">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -222,4 +270,5 @@ export default SignUp;
               />
             </svg>
             <input type="date" placeholder="Budget End Date" />
-          </label> */}
+          </label> */
+}

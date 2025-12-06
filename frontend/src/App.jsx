@@ -1,8 +1,9 @@
 import React from 'react'
-import Login from './components/Pages/Login'
-import SignUp from './components/Pages/SignUp'
+import Login from './pages/Login'
+import SignUp from './pages/SignUp'
 import { BrowserRouter, Route, Routes } from 'react-router'
-import ForgotPassword from './components/Pages/ForgotPassword'
+import ForgotPassword from './pages/ForgotPassword'
+import Landing from './pages/Landing'
 
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
     <>
     <BrowserRouter>
     <Routes>
+      <Route path="/" element={<Landing/>} />
       <Route path="/login" element={<Login/>} />
       <Route path="/signup" element={<SignUp/>} />
       <Route path="/forgotPassword" element={<ForgotPassword/>}/>

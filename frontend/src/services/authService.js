@@ -10,13 +10,7 @@ export const login = async (loginData) => {
   return response.data;
 }
 
-export const getCurrentuser = async () => {
-  const response = await api.get("/auth/me");
+export const logout = async () => {
+  const response = await api.get("/auth/logout");
   return response.data;
-}
-
-export const logOut = () => {
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("user");
 }

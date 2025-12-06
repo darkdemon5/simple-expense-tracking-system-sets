@@ -54,7 +54,7 @@ public class AuthService {
 
             UserResponseDTO urDto = UserResponseDTO.addData(user);
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "accesstoken", accessToken, "User", urDto));
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "User registered successfully!", "accessToken", accessToken, "User", urDto));
         } catch (Exception e) {
             return globalExceptionHandler.handleGenericException(e);
         }
