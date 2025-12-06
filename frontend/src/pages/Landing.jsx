@@ -6,13 +6,13 @@ const Landing = () => {
     <div className="flex flex-col w-full mx-auto h-screen bg-cover bg-center bg-no-repeat bg-[url(src/assets/background.jpg)] inset-0 bg-black/10 bg-blend-multiply">
       <Navbar />
 
-      <div className="flex flex-col h-full overflow-auto justify-center items-center">
-        <div>
+      <div className="flex flex-col h-[60vh] xl:h-[70vh] overflow-auto justify-center items-center gap-3 lg:gap-6 xl:gap-9 pl-3 sm:pl-0">
+        <div className="flex flex-col justify-center sm:items-center text-5xl font-extrabold text-white text-shadow-lg lg:text-7xl 2xl:text-8xl gap-1">
           <p>Take control of your money</p>
           <p>One trail at a time</p>
         </div>
         <div>
-          <p>
+          <p className="flex flex-col justify-center sm:items-center text-lg text-white text-shadow-lg lg:text-2xl 2xl:text-3xl font-extrabold">
             A simple, beautiful way to manage expenses and build financial
             freedom.
           </p>
