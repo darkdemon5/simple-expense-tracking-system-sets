@@ -18,18 +18,6 @@ const Landing = () => {
           </p>
         </div>
       </div>
-      {/* <div className="flex flex-col justify-center md:items-center h-[80vh] gap-6">
-        <div className="text-6xl md:text-7xl w-[80%] mt-2 font-extrabold text-white text-shadow-lg lg:w-full sm:justify-center sm:items-center flex flex-col lg:gap-6">
-          <p>Take control of your money</p>
-          <p>One trail at a time</p>
-        </div>
-        <div>
-          <p className="text-2xl sm:text-4xl w-[80%] font-extrabold text-white/95  md:text-4xl lg:text-4xl md:justify-center md:items-center flex flex-col">
-            A simple, beautiful way to manage expenses and build financial
-            freedom.
-          </p>
-        </div>
-      </div> */}
     </div>
   );
 };
