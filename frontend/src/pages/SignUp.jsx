@@ -1,9 +1,46 @@
 import React from "react";
 import { Link } from "react-router";
 import { signUp } from "../services/authService";
+import { EyeFilledIcon, EyeSlashFilledIcon } from "../components/Icons";
 // name, email, password, budget, budget Period, budgetstartdate, budgetenddate
 
 const SignUp = () => {
+  const successAlert = (data) => {
+    <div role="alert" className="alert alert-success">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>${data}</span>
+    </div>;
+  };
+  const errorAlert = (data) => {
+    <div role="alert" className="alert alert-error">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>${data}</span>
+    </div>;
+  };
   const checkValidation = () => {
     const name = document.getElementById("Name").value;
     const email = document.getElementById("email").value;
@@ -11,11 +48,11 @@ const SignUp = () => {
     const cpass = document.getElementById("cpass").value;
 
     if (!name || !email || !pass || !cpass) {
-      alert("All fields are required");
+      errorAlert("All fields are required");
       return;
     }
     if (pass !== cpass) {
-      alert("Passwords do not match");
+      errorAlert("Passwords do not match");
       return;
     }
     const userData = {
@@ -25,49 +62,24 @@ const SignUp = () => {
     };
     signUp(userData).then((data) => {
       if (data.error) {
-        <div role="alert" className="alert alert-error">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 shrink-0 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>Error while login!!</span>
-        </div>;
+        errorAlert(data.error);
+        return;
       }
       if (data.message) {
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.User));
-        <div role="alert" className="alert alert-success">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 shrink-0 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>Your purchase has been confirmed!</span>
-        </div>;
+        
+        successAlert(data.message);
       }
     });
     // alert("Form submitted successfully!");
   };
-
+  const [isVisible, setIsVisible] = React.useState(false);
+  const [isVisible1, setIsVisible1] = React.useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
+  const toggleVisibility1 = () => setIsVisible1(!isVisible1);
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center mx-auto bg-[#DBE2EF]">
+    <div className="w-full h-screen flex flex-col justify-center items-center mx-auto bg-[#A7CBE3]">
       <div className="flex flex-col gap-4 border p-10 rounded-lg shadow-lg justify-center items-center mx-auto bg-white">
         <div className="text-2xl mb-5 text-[#3F72AF] font-bold">SignUp</div>
         <div className="flex flex-col gap-4 w-80">
@@ -138,7 +150,7 @@ const SignUp = () => {
               </g>
             </svg>
             <input
-              type="password"
+              type={isVisible ? "text" : "password"}
               required
               placeholder="Password"
               minLength="8"
@@ -146,6 +158,18 @@ const SignUp = () => {
               title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
               id="pass"
             />
+            <button
+              aria-label="toggle password visibility"
+              className="focus:outline-solid outline-transparent"
+              type="button"
+              onClick={toggleVisibility}
+            >
+              {isVisible ? (
+                <EyeFilledIcon className="text-2xl text-default-400 cursor-pointer" />
+              ) : (
+                <EyeSlashFilledIcon className="text-2xl text-gray-300 cursor-pointer" />
+              )}
+            </button>
           </label>
           <label className="input validator text-black border-black">
             <svg
@@ -165,7 +189,7 @@ const SignUp = () => {
               </g>
             </svg>
             <input
-              type="password"
+              type={isVisible1 ? "text" : "password"}
               required
               placeholder="Confirm Password"
               minLength="8"
@@ -173,6 +197,18 @@ const SignUp = () => {
               title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
               id="cpass"
             />
+            <button
+              aria-label="toggle password visibility"
+              className="focus:outline-solid outline-transparent"
+              type="button"
+              onClick={toggleVisibility1}
+            >
+              {isVisible1 ? (
+                <EyeFilledIcon className="text-2xl text-default-400 cursor-pointer" />
+              ) : (
+                <EyeSlashFilledIcon className="text-2xl text-gray-300 cursor-pointer" />
+              )}
+            </button>
           </label>
           <button
             className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg xl:btn-lg bg-[#3F72AF] text-white"
@@ -182,9 +218,9 @@ const SignUp = () => {
             Submit
           </button>
           <div>
-            <p className="cursor-pointer justify-center">
+            <p className="justify-center">
               Already got account?{" "}
-              <Link className="text-[#3F72AF]" to="/login">
+              <Link className="cursor-pointer text-[#3F72AF]" to="/login">
                 SignIn
               </Link>
             </p>

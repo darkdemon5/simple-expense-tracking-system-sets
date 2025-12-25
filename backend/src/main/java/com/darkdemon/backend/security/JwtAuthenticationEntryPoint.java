@@ -20,7 +20,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         Map<String, Object> errorDetails = new HashMap<>();
-        errorDetails.put("error", "Unauthorized");
+        errorDetails.put("error", "Unauthorized");  
         errorDetails.put("message", "Authentication token is invalid or expired");
         errorDetails.put("path", request.getRequestURI());
 

@@ -41,7 +41,7 @@ public class AuthService {
     @Transactional
     public ResponseEntity<?> signUp(UserDTO userdto, HttpServletResponse response) {
         if (userRepository.existsByEmail(userdto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Email already registered"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "401", "message", "Email already registered"));
         }
         try {
             //taking info from userdto and storing it in user and repository
@@ -64,13 +64,13 @@ public class AuthService {
     public ResponseEntity<?> signIn(LoginDTO loginDTO, HttpServletResponse response) {
         Optional<User> userOpt = userRepository.findByEmail(loginDTO.getEmail());
         if (userOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Credentials"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Credentials"));
         }
 
         User user = userOpt.get();
 
         if (!encoder.matchP(loginDTO.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid Credentials"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid Credentials"));
         }
 
         refreshTokenRepository.deleteByUserId(user.getId());

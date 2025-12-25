@@ -16,18 +16,23 @@ api.interceptors.request.use(
     if(token){
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // console.log("Request config:", config);
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    // console.log("Request error:", error);
+    return Promise.reject(error);
+  }
 )
 
 //Handle token expiration
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.log("Response error:", error);
     const originalRequest = error.config;
 
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    if (error.response.data.message === "Authentication token is invalid or expired" && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         
@@ -42,7 +47,9 @@ api.interceptors.response.use(
         return Promise.reject(err);
       }
     }
-    return Promise.reject(error);
+
+    return error;
+    // return Promise.reject(error);
   }
 )
 
