@@ -4,25 +4,10 @@ import SignUp from "./pages/SignUp";
 import { BrowserRouter, Route, Routes } from "react-router";
 import ForgotPassword from "./pages/ForgotPassword";
 import Landing from "./pages/Landing";
-import { Toaster } from "sonner";
-import { ToastProvider } from "@heroui/react";
+import { HeroUIProvider } from "@heroui/react";
 
 function App() {
   return (
-    <>
-      {/* <Toaster position='top-center' richColors /> */}
-      <ToastProvider
-        toastProps={{
-          radius: "medium",
-          variant: "flat",
-          timeout: 1000,
-          hideIcon: true,
-          classNames: {
-            closeButton:
-              "opacity-100 absolute right-4 top-1/2 -translate-y-1/2",
-          },
-        }}
-      />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -31,7 +16,6 @@ function App() {
           <Route path="/forgotPassword" element={<ForgotPassword />} />
         </Routes>
       </BrowserRouter>
-    </>
   );
 }
 
