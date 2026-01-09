@@ -7,7 +7,7 @@ const Landing = () => {
       <Navbar />
 
       <div className="flex flex-col h-[60vh] xl:h-[70vh] overflow-auto justify-center items-center gap-3 lg:gap-6 xl:gap-9 pl-3 sm:pl-0">
-        <div className="flex flex-col justify-center sm:items-center text-5xl font-extrabold text-white text-shadow-lg lg:text-7xl 2xl:text-8xl gap-1">
+        <div className="flex flex-col justify-center sm:items-center font-extrabold text-white text-shadow-lg text-5xl lg:text-7xl 2xl:text-8xl gap-1">
           <p>Take control of your money</p>
           <p>One trail at a time</p>
         </div>

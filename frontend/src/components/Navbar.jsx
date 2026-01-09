@@ -3,72 +3,13 @@ import { Link } from "react-router";
 
 const Navbar = () => {
   return (
-    // <div className="drawer">
-    //   <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-    //   <div className="drawer-content flex flex-col">
-    //     {/* Navbar */}
-    //     <div className="navbar bg-base-300 w-full">
-    //       <div className="flex-none lg:hidden">
-    //         <label
-    //           htmlFor="my-drawer-2"
-    //           aria-label="open sidebar"
-    //           className="btn btn-square btn-ghost"
-    //         >
-    //           <svg
-    //             xmlns="http://www.w3.org/2000/svg"
-    //             fill="none"
-    //             viewBox="0 0 24 24"
-    //             className="inline-block h-6 w-6 stroke-current"
-    //           >
-    //             <path
-    //               strokeLinecap="round"
-    //               strokeLinejoin="round"
-    //               strokeWidth="2"
-    //               d="M4 6h16M4 12h16M4 18h16"
-    //             ></path>
-    //           </svg>
-    //         </label>
-    //       </div>
-    //       <div className="mx-2 flex-1 px-2">Navbar Title</div>
-    //       <div className="hidden flex-none lg:block">
-    //         <ul className="menu menu-horizontal">
-    //           {/* Navbar menu content here */}
-    //           <li>
-    //             <a>Navbar Item 1</a>
-    //           </li>
-    //           <li>
-    //             <a>Navbar Item 2</a>
-    //           </li>
-    //         </ul>
-    //       </div>
-    //     </div>
-    //     {/* Page content here */}
-    //     Content
-    //   </div>
-    //   <div className="drawer-side">
-    //     <label
-    //       htmlFor="my-drawer-2"
-    //       aria-label="close sidebar"
-    //       className="drawer-overlay"
-    //     ></label>
-    //     <ul className="menu bg-base-200 min-h-full w-80 p-4">
-    //       {/* Sidebar content here */}
-    //       <li>
-    //         <a>Sidebar Item 1</a>
-    //       </li>
-    //       <li>
-    //         <a>Sidebar Item 2</a>
-    //       </li>
-    //     </ul>
-    //   </div>
-    // </div>
     <div className="grid grid-cols-2 w-full md:grid-cols-3 lg:grid-cols-3 p-4 items-center mx-auto">
       <div className="flex items-center">
-        <h1 className="font-transcity text-3xl md:text-3xl lg:text-5xl">
+        <h1 className="font-transcity fl-text-3xl/5xl">
           PocketTrails
         </h1>
       </div>
-      <div className="gap-4 text-xs md:text-base lg:text-lg cursor-pointer items-center justify-center hidden md:flex lg:flex">
+      <div className="gap-4 fl-text-xs/lg cursor-pointer items-center justify-center hidden md:flex lg:flex">
         <Link to="/">Home</Link>
         <p>About Us</p>
         <p>Contact Us</p>
@@ -115,6 +56,8 @@ const Navbar = () => {
               <p>Contact Us</p>
             </li>
             <li><p>Account</p></li>
+            <li><Link to="/login">Login</Link></li>
+            <li><Link to="/signup">SignUp</Link></li>
           </ul>
         </div>
       </div>
